@@ -27,7 +27,7 @@ function grey(input) {
     var cnv = document.getElementById('imgHtml');
     var cnx = cnv.getContext('2d');
 
-    //cnx.drawImage(base_image, 0, 0,160,120);
+    //cnx.drawImage(base_image, 0, 0,160,120) //resize image;
 
     var xStart = 0,
         yStart = 0,
@@ -53,7 +53,7 @@ function grey(input) {
     }
 
     console.log(xStart);
-    cnx.drawImage(base_image, xStart, yStart,newWidth, newHeight);
+    cnx.drawImage(base_image, xStart, yStart,newWidth, newHeight); // centro img
 
 
 
