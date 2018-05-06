@@ -34,8 +34,8 @@ function grey(input) {
         aspectRadio,
         newWidth,
         newHeight,
-        height = 160,
-        width = 120;
+        height = 285,
+        width = 380;
 
     aspectRadio = base_image.height / base_image.width;
 
@@ -53,7 +53,7 @@ function grey(input) {
     }
 
     console.log(xStart);
-    cnx.drawImage(base_image, xStart, yStart, width, height);
+    cnx.drawImage(base_image, xStart, yStart,newWidth, newHeight);
 
 
 
