@@ -4,6 +4,8 @@ const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 
+const globalShortcut = electron.globalShortcut
+
 const path = require('path')
 const url = require('url')
 
@@ -13,7 +15,9 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow({width: 800, height: 600 ,icon: __dirname + '/tree.ico'})
+
+  mainWindow.setMenu(null);
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -22,8 +26,12 @@ function createWindow () {
     slashes: true
   }))
 
+  globalShortcut.register('f5', function() {
+		mainWindow.reload();
+	})
+
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {

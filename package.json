@@ -1,12 +1,12 @@
 {
-  "name": "electron-quick-start",
+  "name": "TreeAPP",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "TCC processamento de img",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/Aberos/TreeAPP",
   "keywords": [
     "Electron",
     "quick",

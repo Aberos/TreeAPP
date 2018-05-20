@@ -1,6 +1,24 @@
 $(document).ready(function () {
 
+    
+    const app = require('electron').remote.app;
+
+    const { remote } = require('electron');
+
+    const {ipcRenderer} = require('electron');
+
+    $('#btnCancel').click(function () {
+
+        remote.BrowserWindow.getFocusedWindow().close();
+
+    })
 });
+
+function showOptions(i){
+    var visivel  = $('#opt'+i).is(':visible');
+    if (visivel) $('#opt'+i).hide();
+    else $('#opt'+i).fadeIn();
+}
 
 function readURL(input) {
     if (input.files && input.files[0]) {
@@ -10,10 +28,22 @@ function readURL(input) {
             base_image = new Image();
             base_image.src = e.target.result;
             base_image.onload = function () {
-                resizeImage(base_image);
-                //toGrayImage();
-                //extract8PointRadius1Feature();
-                sobelFilter();
+                clearCanvas();
+                if($('input[id="tamanho"]:checked').val() == "on"){
+                    resizeImage(base_image);
+                }else if($('input[id="tamanho2"]:checked').val() == "on"){
+                    cropImage(base_image);
+                }else{
+                    imgNormal(base_image);
+                }
+
+                if($('input[id="filtro"]:checked').val() == "on"){
+                    extract8PointRadius1Feature();
+                }else if($('input[id="filtro2"]:checked').val() == "on"){
+                    sobelFilter();
+                }else{
+                    toGrayImage();
+                }
             }
         }
 
@@ -23,11 +53,37 @@ function readURL(input) {
 
 $("#file").change(readURL);
 
+function clearCanvas(){
+    var cnv = document.getElementById('imgHtml');
+    var cnx = cnv.getContext('2d');
+
+    cnx.clearRect(0,0,cnv.width,cnv.height);
+
+    cnx.beginPath();
+}
+
+function processarImg(){
+    if($('input[id="filtro"]:checked').val() == "on"){
+        extract8PointRadius1Feature();
+    }else if($('input[id="filtro2"]:checked').val() == "on"){
+        sobelFilter();
+    }else{
+        toGrayImage();
+    }
+}
+
+function imgNormal(image){
+    var cnv = document.getElementById('imgHtml');
+    var cnx = cnv.getContext('2d');
+
+    cnx.drawImage(image, 0, 0, image.width, image.height)
+}
+
 function resizeImage(image) {
     var cnv = document.getElementById('imgHtml');
     var cnx = cnv.getContext('2d');
 
-    cnx.drawImage(image, 0, 0, 1000, 1000)
+    cnx.drawImage(image, 0, 0, 160, 120)
 }
 
 function cropImage(image) {
