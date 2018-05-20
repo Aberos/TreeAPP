@@ -28,7 +28,12 @@ function readURL(input) {
             base_image = new Image();
             base_image.src = e.target.result;
             base_image.onload = function () {
-                clearCanvas();
+                var cnv = document.getElementById('imgHtml');
+                var cnx = cnv.getContext('2d');
+            
+                cnx.clearRect(0,0,cnv.width,cnv.height);
+            
+                cnx.beginPath();
                 if($('input[id="tamanho"]:checked').val() == "on"){
                     resizeImage(base_image);
                 }else if($('input[id="tamanho2"]:checked').val() == "on"){
@@ -44,6 +49,8 @@ function readURL(input) {
                 }else{
                     toGrayImage();
                 }
+                printData();
+                
             }
         }
 
@@ -52,6 +59,21 @@ function readURL(input) {
 }
 
 $("#file").change(readURL);
+
+function printData(){
+    var cnv = document.getElementById('imgHtml');
+    var cnx = cnv.getContext('2d');
+
+    var width = cnv.width;
+    var height = cnv.height;
+
+    var data = cnx.getImageData(0, 0, 160, 120).data;
+
+    var fs = require('fs');
+
+
+    fs.writeFileSync('DATA-IMG.txt', data);
+}
 
 function clearCanvas(){
     var cnv = document.getElementById('imgHtml');
