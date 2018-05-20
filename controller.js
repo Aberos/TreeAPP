@@ -1,11 +1,11 @@
 $(document).ready(function () {
 
-    
+
     const app = require('electron').remote.app;
 
     const { remote } = require('electron');
 
-    const {ipcRenderer} = require('electron');
+    const { ipcRenderer } = require('electron');
 
     $('#btnCancel').click(function () {
 
@@ -14,10 +14,10 @@ $(document).ready(function () {
     })
 });
 
-function showOptions(i){
-    var visivel  = $('#opt'+i).is(':visible');
-    if (visivel) $('#opt'+i).hide();
-    else $('#opt'+i).fadeIn();
+function showOptions(i) {
+    var visivel = $('#opt' + i).is(':visible');
+    if (visivel) $('#opt' + i).hide();
+    else $('#opt' + i).fadeIn();
 }
 
 function readURL(input) {
@@ -30,27 +30,27 @@ function readURL(input) {
             base_image.onload = function () {
                 var cnv = document.getElementById('imgHtml');
                 var cnx = cnv.getContext('2d');
-            
-                cnx.clearRect(0,0,cnv.width,cnv.height);
-            
+
+                cnx.clearRect(0, 0, cnv.width, cnv.height);
+
                 cnx.beginPath();
-                if($('input[id="tamanho"]:checked').val() == "on"){
+                if ($('input[id="tamanho"]:checked').val() == "on") {
                     resizeImage(base_image);
-                }else if($('input[id="tamanho2"]:checked').val() == "on"){
+                } else if ($('input[id="tamanho2"]:checked').val() == "on") {
                     cropImage(base_image);
-                }else{
+                } else {
                     imgNormal(base_image);
                 }
 
-                if($('input[id="filtro"]:checked').val() == "on"){
+                if ($('input[id="filtro"]:checked').val() == "on") {
                     extract8PointRadius1Feature();
-                }else if($('input[id="filtro2"]:checked').val() == "on"){
+                } else if ($('input[id="filtro2"]:checked').val() == "on") {
                     sobelFilter();
-                }else{
+                } else {
                     toGrayImage();
                 }
                 printData();
-                
+
             }
         }
 
@@ -60,7 +60,7 @@ function readURL(input) {
 
 $("#file").change(readURL);
 
-function printData(){
+function printData() {
     var cnv = document.getElementById('imgHtml');
     var cnx = cnv.getContext('2d');
 
@@ -71,30 +71,39 @@ function printData(){
 
     var fs = require('fs');
 
+    fs.exists('DATA-IMG.txt', (exists) => {
+        if (exists) {
+            fs.unlink('DATA-IMG.txt', (err) => {
+                if (err) throw err;
+                fs.writeFileSync('DATA-IMG.txt', data);
+            });
+        } else {
+            fs.writeFileSync('DATA-IMG.txt', data);
+        }
+    });
 
-    fs.writeFileSync('DATA-IMG.txt', data);
 }
 
-function clearCanvas(){
+function clearCanvas() {
     var cnv = document.getElementById('imgHtml');
     var cnx = cnv.getContext('2d');
 
-    cnx.clearRect(0,0,cnv.width,cnv.height);
+    cnx.clearRect(0, 0, cnv.width, cnv.height);
 
     cnx.beginPath();
 }
 
-function processarImg(){
-    if($('input[id="filtro"]:checked').val() == "on"){
+function processarImg() {
+    if ($('input[id="filtro"]:checked').val() == "on") {
         extract8PointRadius1Feature();
-    }else if($('input[id="filtro2"]:checked').val() == "on"){
+    } else if ($('input[id="filtro2"]:checked').val() == "on") {
         sobelFilter();
-    }else{
+    } else {
         toGrayImage();
     }
 }
 
-function imgNormal(image){
+function imgNormal(image) {
     var cnv = document.getElementById('imgHtml');
     var cnx = cnv.getContext('2d');
 
@@ -226,12 +235,12 @@ function extract8PointRadius1Feature(canvas = document.getElementById('imgHtml')
     context.putImageData(imageData, 0, 0);
 }
 
-function sobelFilter(canvas = document.getElementById('imgHtml')){
+function sobelFilter(canvas = document.getElementById('imgHtml')) {
     const Sobel = require('sobel');
     let context = canvas.getContext('2d');
     let imageData = getImageData(canvas);
 
-    width =  canvas.width;
+    width = canvas.width;
     height = canvas.height;
 
     // Sobel constructor returns an Uint8ClampedArray with sobel data
