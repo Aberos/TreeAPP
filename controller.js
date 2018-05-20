@@ -12,7 +12,8 @@ function readURL(input) {
             base_image.onload = function () {
                 resizeImage(base_image);
                 //toGrayImage();
-                extract8PointRadius1Feature();
+                //extract8PointRadius1Feature();
+                sobelFilter();
             }
         }
 
@@ -26,7 +27,7 @@ function resizeImage(image) {
     var cnv = document.getElementById('imgHtml');
     var cnx = cnv.getContext('2d');
 
-    cnx.drawImage(image, 0, 0, 160, 120)
+    cnx.drawImage(image, 0, 0, 1000, 1000)
 }
 
 function cropImage(image) {
@@ -145,4 +146,20 @@ function extract8PointRadius1Feature(canvas = document.getElementById('imgHtml')
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.putImageData(imageData, 0, 0);
+}
+
+function sobelFilter(canvas = document.getElementById('imgHtml')){
+    const Sobel = require('sobel');
+    let context = canvas.getContext('2d');
+    let imageData = getImageData(canvas);
+
+    width =  canvas.width;
+    height = canvas.height;
+
+    // Sobel constructor returns an Uint8ClampedArray with sobel data
+    var sobelData = Sobel(imageData);
+
+    // [sobelData].toImageData() returns a new ImageData object
+    var sobelImageData = sobelData.toImageData();
+    context.putImageData(sobelImageData, 0, 0);
 }
