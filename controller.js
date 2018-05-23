@@ -51,6 +51,9 @@ function readURL(input) {
                 }
                 printData();
 
+                $('#fileDiv').hide();
+                $('#new').removeClass('disabled');
+
             }
         }
 
@@ -94,13 +97,9 @@ function clearCanvas() {
 }
 
 function processarImg() {
-    if ($('input[id="filtro"]:checked').val() == "on") {
-        extract8PointRadius1Feature();
-    } else if ($('input[id="filtro2"]:checked').val() == "on") {
-        sobelFilter();
-    } else {
-        toGrayImage();
-    }
+    const {getCurrentWindow} = require('electron').remote;
+
+    getCurrentWindow().reload();
 }
 
 function imgNormal(image) {
