@@ -12,29 +12,41 @@ $(document).ready(function () {
         remote.BrowserWindow.getFocusedWindow().close();
 
     })
+
+    let options = $('input[name=tipo]');
+    let options2 = $('input[name=tipo2]');
+
+    options.attr("onclick", "javascript:changeImageFilter()");
+    options2.attr ("onclick", "javascript:changeImageFilter()");
 });
 
 function showOptions(i) {
-    var visivel = $('#opt' + i).is(':visible');
+    let visivel = $('#opt' + i).is(':visible');
     if (visivel) $('#opt' + i).hide();
     else $('#opt' + i).fadeIn();
 }
 
+var info = {};
+
 function readURL(input) {
     if (input.files && input.files[0]) {
-        var reader = new FileReader();
+        let reader = new FileReader();
 
         reader.onload = function (e) {
             base_image = new Image();
             base_image.src = e.target.result;
             base_image.onload = function () {
-                var cnv = document.getElementById('imgHtml');
-                var cnx = cnv.getContext('2d');
 
-                cnx.clearRect(0, 0, cnv.width, cnv.height);
+                info.original = base_image;
 
-                cnx.beginPath();
+                clearCanvas();
+
+                let cnv = document.getElementById('imgHtml');
+                let cnx = cnv.getContext('2d');
+
                 if ($('input[id="tamanho"]:checked').val() == "on") {
+                    cnv.width = 160;
+                    cnv.height = 120;
                     resizeImage(base_image);
                 } else if ($('input[id="tamanho2"]:checked').val() == "on") {
                     cropImage(base_image);
@@ -51,8 +63,9 @@ function readURL(input) {
                 }
                 printData();
 
-                $('#fileDiv').hide();
+                //$('#fileDiv').hide();
                 $('#new').removeClass('disabled');
+                $('#btnDownload').removeClass('disabled');
 
             }
         }
@@ -63,16 +76,49 @@ function readURL(input) {
 
 $("#file").change(readURL);
 
+function clearCanvas() {
+
+    let cnv = document.getElementById('imgHtml');
+    let context = cnv.getContext('2d');
+
+    context.clearRect(0, 0, 500, 300);
+
+}
+
+
+function setOriginal() {
+
+    let cnv = document.getElementById('imgHtml');
+    let cnx = cnv.getContext('2d');
+
+    cnx.clearRect(0, 0, cnv.width, cnv.height);
+    cnx.beginPath();
+
+    cnx.moveTo(0, 0);
+    cnx.stroke();
+
+    imgNormal(info.original);
+
+}
+
+function download() {
+    let download = document.getElementById("download");
+    let image = document.getElementById("imgHtml").toDataURL("image/png")
+        .replace("image/png", "image/octet-stream");
+    download.setAttribute("href", image);
+    //download.setAttribute("download","archive.png");
+}
+
 function printData() {
-    var cnv = document.getElementById('imgHtml');
-    var cnx = cnv.getContext('2d');
+    let cnv = document.getElementById('imgHtml');
+    let cnx = cnv.getContext('2d');
 
-    var width = cnv.width;
-    var height = cnv.height;
+    let width = cnv.width;
+    let height = cnv.height;
 
-    var data = cnx.getImageData(0, 0, 160, 120).data;
+    let data = cnx.getImageData(0, 0, 160, 120).data;
 
-    var fs = require('fs');
+    let fs = require('fs');
 
     fs.exists('DATA-IMG.txt', (exists) => {
         if (exists) {
@@ -87,9 +133,46 @@ function printData() {
 
 }
 
+function changeImageFilter() {
+
+    if (info.original != null) {
+        clearCanvas();
+
+        let cnv = document.getElementById('imgHtml');
+        let cnx = cnv.getContext('2d');
+
+        if ($('input[id="tamanho"]:checked').val() == "on") {
+            cnv.width = 160;
+            cnv.height = 120;
+            resizeImage(info.original);
+        } else if ($('input[id="tamanho2"]:checked').val() == "on") {
+            cropImage(info.original);
+        } else {
+            imgNormal(info.original);
+        }
+
+        if ($('input[id="filtro"]:checked').val() == "on") {
+            extract8PointRadius1Feature();
+        } else if ($('input[id="filtro2"]:checked').val() == "on") {
+            sobelFilter();
+        } else {
+            toGrayImage();
+        }
+        printData();
+
+        //$('#fileDiv').hide();
+        $('#new').removeClass('disabled');
+        $('#btnDownload').removeClass('disabled');
+        console.log('com valor');
+    }else{
+        console.log('sem valor');
+    }
+
+}
+
 function clearCanvas() {
-    var cnv = document.getElementById('imgHtml');
-    var cnx = cnv.getContext('2d');
+    let cnv = document.getElementById('imgHtml');
+    let cnx = cnv.getContext('2d');
 
     cnx.clearRect(0, 0, cnv.width, cnv.height);
 
@@ -97,31 +180,34 @@ function clearCanvas() {
 }
 
 function processarImg() {
-    const {getCurrentWindow} = require('electron').remote;
+    const { getCurrentWindow } = require('electron').remote;
 
     getCurrentWindow().reload();
 }
 
 function imgNormal(image) {
-    var cnv = document.getElementById('imgHtml');
-    var cnx = cnv.getContext('2d');
+    let cnv = document.getElementById('imgHtml');
+    let cnx = cnv.getContext('2d');
+
+    cnv.width = 500;
+    cnv.height = 300;
 
     cnx.drawImage(image, 0, 0, image.width, image.height)
 }
 
 function resizeImage(image) {
-    var cnv = document.getElementById('imgHtml');
-    var cnx = cnv.getContext('2d');
+    let cnv = document.getElementById('imgHtml');
+    let cnx = cnv.getContext('2d');
 
     cnx.drawImage(image, 0, 0, 160, 120)
 }
 
 function cropImage(image) {
 
-    var cnv = document.getElementById('imgHtml');
-    var cnx = cnv.getContext('2d');
+    let cnv = document.getElementById('imgHtml');
+    let cnx = cnv.getContext('2d');
 
-    var xStart = 0,
+    let xStart = 0,
         yStart = 0,
         aspectRadio,
         newWidth,
@@ -144,30 +230,33 @@ function cropImage(image) {
         yStart = -(newHeight - height) / 2;
     }
 
+    cnv.width = newWidth;
+    cnv.height = newHeight;
+
     cnx.drawImage(image, xStart, yStart, newWidth, newHeight); // centro img   
 }
 
 function getCanvasCoordinates(n, width) {
-    var x = (n / 4) % width
+    let x = (n / 4) % width
         , y = (n / 4 - x) / width;
     return { x: x, y: y };
 }
 
 function toGrayImage() {
-    var canvas = document.getElementById('imgHtml');
-    var context = canvas.getContext('2d')
+    let canvas = document.getElementById('imgHtml');
+    let context = canvas.getContext('2d')
 
-    var width = canvas.width;
-    var height = canvas.height;
+    let width = canvas.width;
+    let height = canvas.height;
 
-    var imgd = context.getImageData(0, 0, width, height);
+    let imgd = context.getImageData(0, 0, width, height);
     // get all pixel data
-    var data = new Array(width);
-    for (var i = 0; i < imgd.data.length; i += 4) {
-        var coord = getCanvasCoordinates(i, width);
+    let data = new Array(width);
+    for (let i = 0; i < imgd.data.length; i += 4) {
+        let coord = getCanvasCoordinates(i, width);
         if (!data[coord.x]) data[coord.x] = new Array(height);
         // change to grayscale
-        var grayValue = Math.floor(imgd.data[i] * 0.3 + imgd.data[i + 1] * 0.59 + imgd.data[i + 2] * 0.11);
+        let grayValue = Math.floor(imgd.data[i] * 0.3 + imgd.data[i + 1] * 0.59 + imgd.data[i + 2] * 0.11);
         imgd.data[i] = imgd.data[i + 1] = imgd.data[i + 2] = grayValue;
         data[coord.x][coord.y] = grayValue;
     }
@@ -243,9 +332,9 @@ function sobelFilter(canvas = document.getElementById('imgHtml')) {
     height = canvas.height;
 
     // Sobel constructor returns an Uint8ClampedArray with sobel data
-    var sobelData = Sobel(imageData);
+    let sobelData = Sobel(imageData);
 
     // [sobelData].toImageData() returns a new ImageData object
-    var sobelImageData = sobelData.toImageData();
+    let sobelImageData = sobelData.toImageData();
     context.putImageData(sobelImageData, 0, 0);
 }

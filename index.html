@@ -56,7 +56,7 @@
                   </div>
         
                   <div class="col col-md-12">
-                    <div class="text-center">
+                    <div id="divCanvas" class="text-center">
                         <!--img id="imgHtml" src="" alt="" width="200" height="200"-->
                         <canvas id="imgHtml" width="500" height="300" style="border:1px solid #000000;"></canvas>
                     </div>
@@ -67,7 +67,8 @@
                   </div>
         
                   <div class="col col-md12" style="margin-top:1%;display:block">
-                      <a id="new" href="javascript:processarImg()" class="btn btn-primary btn-block disabled">Nova Imagem</a>
+                      <a id="new" href="javascript:processarImg()" class="btn btn-primary btn-block disabled" style="display:none">Nova Imagem</a>
+                      <a id="download" class="disabled" download="imagem.png" ><button id="btnDownload" style="margin-top: 1%" class="btn btn-success btn-block disabled" onclick="javascript:download()"> Download </button></a>
                   </div>
         
                 </div>
