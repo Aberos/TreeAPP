@@ -28,10 +28,14 @@ function createWindow () {
 
   globalShortcut.register('f5', function() {
 		mainWindow.reload();
-	})
+  })
+  
+  // globalShortcut.register('f4', function() {
+	// 	mainWindow.webContents.openDevTools();
+	// })
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {

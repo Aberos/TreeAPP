@@ -1,23 +1,18 @@
 $(document).ready(function () {
 
 
-    const app = require('electron').remote.app;
 
     const { remote } = require('electron');
 
     const { ipcRenderer } = require('electron');
-
-    $('#btnCancel').click(function () {
-
-        remote.BrowserWindow.getFocusedWindow().close();
-
-    })
+    
+    const {app, BrowserWindow} = require('electron');
 
     let options = $('input[name=tipo]');
     let options2 = $('input[name=tipo2]');
 
     options.attr("onclick", "javascript:changeImageFilter()");
-    options2.attr ("onclick", "javascript:changeImageFilter()");
+    options2.attr("onclick", "javascript:changeImageFilter()");
 });
 
 function showOptions(i) {
@@ -164,7 +159,7 @@ function changeImageFilter() {
         $('#new').removeClass('disabled');
         $('#btnDownload').removeClass('disabled');
         console.log('com valor');
-    }else{
+    } else {
         console.log('sem valor');
     }
 
@@ -337,4 +332,39 @@ function sobelFilter(canvas = document.getElementById('imgHtml')) {
     // [sobelData].toImageData() returns a new ImageData object
     let sobelImageData = sobelData.toImageData();
     context.putImageData(sobelImageData, 0, 0);
+}
+
+const fs = require('fs');
+const pixelUtil = require('pixel-util');
+
+function editarFotosPasta() {
+    const entrada = './input/';
+    const saida = './output/';
+    let filtro = 'LBP';
+
+
+    let arquivos = [];
+
+    fs.readdirSync(entrada).forEach(file => {
+        arquivos.push(file);
+    })
+
+    arquivos.forEach(element => {
+        let efile = entrada + element;
+
+        pixelUtil.createBuffer(efile).then(function (buffer) {
+
+            let sfile = saida + filtro + '-' + element;
+            let data = buffer;
+
+            fs.writeFile(sfile, data, function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+
+                console.log("The file was saved!");
+            });
+        });
+    })
+
 }
