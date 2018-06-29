@@ -20,7 +20,11 @@
     "electron": "^1.8.4"
   },
   "dependencies": {
+    "arff-utils": "0.0.5",
     "electron-debug": "^2.0.0",
+    "hog-descriptor": "^1.0.0",
+    "hog-features": "^1.0.0",
+    "image-js": "^0.21.0",
     "jquery": "^3.3.1",
     "lbp": "^0.1.1",
     "pixel-util": "0.0.2",

@@ -108,24 +108,40 @@ function printData() {
     let cnv = document.getElementById('imgHtml');
     let cnx = cnv.getContext('2d');
 
-    let width = cnv.width;
-    let height = cnv.height;
+    
+    let file = cnv.toDataURL("image/png");
 
-    let data = cnx.getImageData(0, 0, 160, 120).data;
+    const {Image} = require('image-js');
+    const hog = require("hog-features");
 
-    let fs = require('fs');
+    let options_hog = {
+        cellSize: 4,
+        blockSize: 2,
+        blockStride: 1,
+        bins: 6,
+        norm: "L2"
+    }
 
-    fs.exists('DATA-IMG.txt', (exists) => {
-        if (exists) {
-            fs.unlink('DATA-IMG.txt', (err) => {
-                if (err) throw err;
-                fs.writeFileSync('DATA-IMG.txt', data);
-            });
-        } else {
-            fs.writeFileSync('DATA-IMG.txt', data);
-        }
+    Image.load(file).then(function (image) {
+        image.scale({width:160, height:120});
+        let descriptor = hog.extractHOG(image, options_hog);
+        let fs = require('fs');
+
+        fs.exists('DATA-IMG.txt', (exists) => {
+            if (exists) {
+                fs.unlink('DATA-IMG.txt', (err) => {
+                    if (err) throw err;
+                    fs.writeFileSync('DATA-IMG.txt', descriptor);
+                });
+            } else {
+                fs.writeFileSync('DATA-IMG.txt', descriptor);
+            }
+        });
     });
+    // let width = cnv.width;
+    // let height = cnv.height;
 
+    // let data = cnx.getImageData(0, 0, 160, 120).data;
 }
 
 function changeImageFilter() {
@@ -194,7 +210,7 @@ function resizeImage(image) {
     let cnv = document.getElementById('imgHtml');
     let cnx = cnv.getContext('2d');
 
-    cnx.drawImage(image, 0, 0, 160, 120)
+    cnx.drawImage(image, 0, 0, 160, 124)
 }
 
 function cropImage(image) {
