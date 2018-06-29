@@ -1,7 +1,9 @@
+//Metodos ao iniciar APP
 $(document).ready(function () {
 
 
 
+    //REQUISIÇÕES ELECTRON
     const { remote } = require('electron');
 
     const { ipcRenderer } = require('electron');
@@ -11,18 +13,25 @@ $(document).ready(function () {
     let options = $('input[name=tipo]');
     let options2 = $('input[name=tipo2]');
 
+    //ADICIONADO FUNÇÕES AOS BOTOES PARA TROCAR OS FILTROS
     options.attr("onclick", "javascript:changeImageFilter()");
     options2.attr("onclick", "javascript:changeImageFilter()");
 });
 
+//METODO PARA MANIPULAÇÃO DO MENU LATERAL
 function showOptions(i) {
     let visivel = $('#opt' + i).is(':visible');
     if (visivel) $('#opt' + i).hide();
     else $('#opt' + i).fadeIn();
 }
 
-var info = {};
+//VARIAVEIS GLOBAIS
+var backup = {};
+var default_widht = 160;
+var default_height = 120;
+///////////////////////
 
+//METODO PARA O INPUT DO TIPO FILE LER A IMG
 function readURL(input) {
     if (input.files && input.files[0]) {
         let reader = new FileReader();
@@ -32,34 +41,42 @@ function readURL(input) {
             base_image.src = e.target.result;
             base_image.onload = function () {
 
-                info.original = base_image;
+                //FAZ UM BACKUP DA IMAGEM ORIGINAL SEM FILTRO PARA SER USADA PARA A ALTERAÇÃO DE FILTROS
+                backup.original = base_image;
+                //////////////
 
+                //LIMPA O CANVAS
                 clearCanvas();
 
-                let cnv = document.getElementById('imgHtml');
-                let cnx = cnv.getContext('2d');
-
+                //ALTERAÇÃO DO TAMANHO DA IMAGEM DE ACORDO COM A ESCOLHA
                 if ($('input[id="tamanho"]:checked').val() == "on") {
-                    cnv.width = 160;
-                    cnv.height = 120;
+                    //REDIMENSIONA A IMAGEM DE ACORDO COM O VALOR OS INPUTS
                     resizeImage(base_image);
                 } else if ($('input[id="tamanho2"]:checked').val() == "on") {
+                    //METODO DESATIVADO
                     cropImage(base_image);
                 } else {
+                    //EXIBE A IMAGEM EM SEU TAMANHO ORIGINAL
                     imgNormal(base_image);
                 }
 
+                //APLICA O FILTRO DE ACORDO COM A ESCOLHA
                 if ($('input[id="filtro"]:checked').val() == "on") {
+                    //APLICAÇÃO DO LBP
                     extract8PointRadius1Feature();
                 } else if ($('input[id="filtro2"]:checked').val() == "on") {
+                    //APLICAÇÃO DO SOBEL
                     sobelFilter();
                 } else {
+                    //APLICAÇÃO DA ESCOLA DE CINZA
                     toGrayImage();
                 }
                 printData();
 
-                //$('#fileDiv').hide();
+
+                //BOTAO NAO ESTA SENDO UTILIZADO
                 $('#new').removeClass('disabled');
+                //HABILITA O BOTAO PARA BAIXAR A IMAGEM COM  OS FILTRO QUE ESTA NO CANVAS
                 $('#btnDownload').removeClass('disabled');
 
             }
@@ -71,16 +88,7 @@ function readURL(input) {
 
 $("#file").change(readURL);
 
-function clearCanvas() {
-
-    let cnv = document.getElementById('imgHtml');
-    let context = cnv.getContext('2d');
-
-    context.clearRect(0, 0, 500, 300);
-
-}
-
-
+//METODO PARA ADICIONAR A IMAGEM ORIGINAL NO CANVAS
 function setOriginal() {
 
     let cnv = document.getElementById('imgHtml');
@@ -92,10 +100,11 @@ function setOriginal() {
     cnx.moveTo(0, 0);
     cnx.stroke();
 
-    imgNormal(info.original);
+    imgNormal(backup.original);
 
 }
 
+//METODO PARA BAIXAR A IMAGEM DO CANVAS
 function download() {
     let download = document.getElementById("download");
     let image = document.getElementById("imgHtml").toDataURL("image/png")
@@ -104,62 +113,43 @@ function download() {
     //download.setAttribute("download","archive.png");
 }
 
+//METODO PARA SALVAR O DATA DA IMAGEM EM UM ARQUIVO TXT NA RAIZ DO SOFTWARE
 function printData() {
     let cnv = document.getElementById('imgHtml');
     let cnx = cnv.getContext('2d');
 
-    
-    let file = cnv.toDataURL("image/png");
+    let width = cnv.width;
+    let height = cnv.height;
 
-    const {Image} = require('image-js');
-    const hog = require("hog-features");
-
-    let options_hog = {
-        cellSize: 4,
-        blockSize: 2,
-        blockStride: 1,
-        bins: 6,
-        norm: "L2"
-    }
-
-    Image.load(file).then(function (image) {
-        image.scale({width:160, height:120});
-        let descriptor = hog.extractHOG(image, options_hog);
-        let fs = require('fs');
-
-        fs.exists('DATA-IMG.txt', (exists) => {
-            if (exists) {
-                fs.unlink('DATA-IMG.txt', (err) => {
-                    if (err) throw err;
-                    fs.writeFileSync('DATA-IMG.txt', descriptor);
-                });
-            } else {
-                fs.writeFileSync('DATA-IMG.txt', descriptor);
-            }
-        });
+    let data = cnx.getImageData(0, 0, 160, 120).data;
+    fs.exists('DATA-IMG.txt', (exists) => {
+        if (exists) {
+            fs.unlink('DATA-IMG.txt', (err) => {
+                if (err) throw err;
+                fs.writeFileSync('DATA-IMG.txt', data);
+            });
+        } else {
+            fs.writeFileSync('DATA-IMG.txt', data);
+        }
     });
-    // let width = cnv.width;
-    // let height = cnv.height;
-
-    // let data = cnx.getImageData(0, 0, 160, 120).data;
 }
 
+//METODO PARA ALTERAR FILTRO E TAMANHO DA IMAGEM SE UTILIZANDO DA IMAGEM SALVA NO BACKUP
+//FUNCIONA DA MESMA MANEIRA QUE O METODO "readURL", POREM UTILIZANDO-SE DA IMAGEM DO BACKUP
 function changeImageFilter() {
 
-    if (info.original != null) {
+    if (backup.original != null) {
         clearCanvas();
 
         let cnv = document.getElementById('imgHtml');
         let cnx = cnv.getContext('2d');
 
         if ($('input[id="tamanho"]:checked').val() == "on") {
-            cnv.width = 160;
-            cnv.height = 120;
-            resizeImage(info.original);
+            resizeImage(backup.original);
         } else if ($('input[id="tamanho2"]:checked').val() == "on") {
-            cropImage(info.original);
+            cropImage(backup.original);
         } else {
-            imgNormal(info.original);
+            imgNormal(backup.original);
         }
 
         if ($('input[id="filtro"]:checked').val() == "on") {
@@ -181,6 +171,7 @@ function changeImageFilter() {
 
 }
 
+//METODO PARA LIMPAR O CANVAS
 function clearCanvas() {
     let cnv = document.getElementById('imgHtml');
     let cnx = cnv.getContext('2d');
@@ -190,29 +181,54 @@ function clearCanvas() {
     cnx.beginPath();
 }
 
+//METODO PARA ATUALIZAR A PAGINA Q NAO ESTA SENDO UTILIZADO
 function processarImg() {
     const { getCurrentWindow } = require('electron').remote;
 
     getCurrentWindow().reload();
 }
 
+//METODO PARA EXIBIR IMAGEM NO TAMANHO ORIGINAL DA MESMA
 function imgNormal(image) {
     let cnv = document.getElementById('imgHtml');
     let cnx = cnv.getContext('2d');
 
-    cnv.width = 500;
-    cnv.height = 300;
+    cnv.width = image.width;
+    cnv.height = image.height;
 
     cnx.drawImage(image, 0, 0, image.width, image.height)
 }
 
+//METODO PARA EXIBIR A IMAGEM DE ACORDO COM O TAMANHO INFORMADO NOS INPUTS
 function resizeImage(image) {
     let cnv = document.getElementById('imgHtml');
     let cnx = cnv.getContext('2d');
+    
+    //INPUT WIDHT
+    let img_widht = $('#wImage').val();
+    //INPUT HEIGHT
+    let img_height = $('#hImage').val();
 
-    cnx.drawImage(image, 0, 0, 160, 124)
+    //CASO O INPUT ESTIVER NULO ELE IRA ATRIBUIR O WIDHT PADRAO DEFINIDO NAS VARIAVEIS GLOBAIS
+    if(img_widht == 0 || img_widht == null){
+        $('#wImage').val(default_widht);
+        img_widht = default_widht;
+    }
+
+    if(img_height == 0 || img_height == null){
+        $('#hImage').val(default_height);
+        img_height = default_height;
+    }
+    ///////////////////////////////////////////////
+
+    cnv.width = img_widht;
+    cnv.height = img_height;
+
+    cnx.drawImage(image, 0, 0, img_widht, img_height)
 }
 
+//FUNCAO DESATIVADA QUE SERIA PARA PEGAR O CENTRO DA IMAGEM
+//NAO ESTA FUNCIONANDO
 function cropImage(image) {
 
     let cnv = document.getElementById('imgHtml');
@@ -223,8 +239,8 @@ function cropImage(image) {
         aspectRadio,
         newWidth,
         newHeight,
-        height = 285,
-        width = 380;
+        height = 120,
+        width = 160;
 
     aspectRadio = image.height / image.width;
 
@@ -247,12 +263,14 @@ function cropImage(image) {
     cnx.drawImage(image, xStart, yStart, newWidth, newHeight); // centro img   
 }
 
+//METODOS USADOS NA ESCALA DE CINZA
 function getCanvasCoordinates(n, width) {
     let x = (n / 4) % width
         , y = (n / 4 - x) / width;
     return { x: x, y: y };
 }
 
+//METODO PARA A APLICACAO DA ESCALA DE CINZA NA FOTO
 function toGrayImage() {
     let canvas = document.getElementById('imgHtml');
     let context = canvas.getContext('2d')
@@ -276,8 +294,7 @@ function toGrayImage() {
 
 }
 
-//LBP FUNCTIONS
-
+//MEOTODOS PARA O LBP
 const RGBA_SHIFT = 4;
 
 function get1DPosition(colLength, x, y) {
@@ -302,6 +319,7 @@ function getGrayScaleValue(data, position) {
     return data[position] * 0.3 + data[position + 1] * 0.59 + data[position + 2] * 0.11;
 }
 
+//METODO PRINCIPAL DO LBP
 function extract8PointRadius1Feature(canvas = document.getElementById('imgHtml'), radius = 1) {
     let context = canvas.getContext('2d');
     let imageData = getImageData(canvas);
@@ -334,6 +352,9 @@ function extract8PointRadius1Feature(canvas = document.getElementById('imgHtml')
     context.putImageData(imageData, 0, 0);
 }
 
+//METODO DO SOBEL 
+//METODO UTILIZA O PACOTE SOBEL INSTALADO PELO NPM
+//LINK DO GITHUB https://github.com/miguelmota/sobel
 function sobelFilter(canvas = document.getElementById('imgHtml')) {
     const Sobel = require('sobel');
     let context = canvas.getContext('2d');
@@ -350,6 +371,21 @@ function sobelFilter(canvas = document.getElementById('imgHtml')) {
     context.putImageData(sobelImageData, 0, 0);
 }
 
+//METODO DO CANNY FILTER NAO UTILIZADO
+// function cannyFilter(canvas = document.getElementById('imgHtml')){
+//     const cannyEdgeDetector  =  require('canny-edge-detector');
+//     const {Image} = require('image-js');
+    
+//     Image.load(backup.original.src).then((img) => {
+//         const grey = img.grey();
+//         const edge = cannyEdgeDetector(img); 
+//         context.drawImage(edge, 0, 0, 160, 124)
+//     });  
+// }
+
+
+//METODO INICIAL PARA SE LER FOTOS EM PASTA
+//NAO ESTA SENDO UTILIZADO
 const fs = require('fs');
 const pixelUtil = require('pixel-util');
 

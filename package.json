@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "arff-utils": "0.0.5",
+    "canny-edge-detector": "^1.0.0",
     "electron-debug": "^2.0.0",
     "hog-descriptor": "^1.0.0",
     "hog-features": "^1.0.0",

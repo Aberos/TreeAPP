@@ -20,32 +20,48 @@
 
       <div class="container-fluid"> 
           <div class="row">
-            <div class="col col-md-3">
+            <div class="col-3">
               <ul class="nav flex-column">
                 <li class="nav-item">
                   <a class="nav-link active" href="javascript:showOptions(1)">Tamanho Imagem</a>
-                    <ul style="display:none;" id="opt1">
+                    <ul style="" id="opt1">
                       <label class="checkbox"><input id="tamanho" name="tipo" type="radio" checked>Redimensionar</label>
-                      <label class="checkbox"><input id="tamanho2" name="tipo" type="radio">Cortar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                      <label class="checkbox" style="display:none"><input id="tamanho2" name="tipo" type="radio">Cortar</label>
                       <label class="checkbox"><input id="tamanho3" name="tipo" type="radio">Normal</label>
                     </ul>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link active" href="javascript:showOptions(2)">Filtros</a>
-                    <ul style="display:none;" id="opt2">
-                      <label class="checkbox"><input id="filtro" name="tipo2" type="radio" checked>LBP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                      <label class="checkbox"><input id="filtro2" name="tipo2" type="radio" >Sobel &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                      <label class="checkbox"><input id="filtro3" name="tipo2" type="radio" >Cinza</label>
+                    <ul style="" id="opt2">
+                      <label class="checkbox"><input id="filtro" name="tipo2" type="radio" checked>Filtro LBP</label>
+                      <label class="checkbox"><input id="filtro2" name="tipo2" type="radio" >Filtro Sobel </label>
+                      <label class="checkbox"><input id="filtro3" name="tipo2" type="radio" >Escala de Cinza</label>
                     </ul>
                 </li>
               </ul>
             </div>
 
-            <div class="col col-md-9">
+            <div class="col-9">
               <div class="">
                 <div class="row" style="margin-top: 1%">
         
-                  <div id="fileDiv" class="input-group mb-3 col col-md-12">
+                  <div class="col-12">
+                    <div class="row">
+                      <div class="col-10 offset-2 offset-lg-3 form-inline">
+                        <div  class="col-md-2">
+                          <label  for="wImage"><strong>Width:</strong>
+                          <input id="wImage" type="number" class="form-control" value="160"></label>
+                        </div>
+  
+                        <div class="col-md-2 offset-md-5 offset-lg-1 ">
+                          <label for="hImage"><strong>Height:</strong>
+                          <input id="hImage" type="number" class="form-control" value="120"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="fileDiv" class="input-group mb-3 col col-md-12" style="margin-top: 1%">
                     <div class="col col-md-12">
                       <label ><strong>Seleciona a imagem:</strong></label>
                     </div>
@@ -54,8 +70,9 @@
                       <label class="custom-file-label" for="file">Choose file</label>
                     </div>
                   </div>
+
         
-                  <div class="col col-md-12">
+                  <div class="col col-md-12" style="margin-top: 1%">
                     <div id="divCanvas" class="text-center">
                         <!--img id="imgHtml" src="" alt="" width="200" height="200"-->
                         <canvas id="imgHtml" width="500" height="300" style="border:1px solid #000000;"></canvas>

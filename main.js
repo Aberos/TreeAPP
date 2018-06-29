@@ -26,6 +26,8 @@ function createWindow () {
     slashes: true
   }))
 
+  mainWindow.maximize();
+
   globalShortcut.register('f5', function() {
 		mainWindow.reload();
   })
