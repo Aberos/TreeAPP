@@ -16,6 +16,18 @@ $(document).ready(function () {
     //ADICIONADO FUNÇÕES AOS BOTOES PARA TROCAR OS FILTROS
     options.attr("onclick", "javascript:changeImageFilter()");
     options2.attr("onclick", "javascript:changeImageFilter()");
+
+    if ($('input[id="tamanho"]:checked').val() == "on") {
+    
+        $('#wImage').on('input', function() { 
+            changeImageFilter();
+        });
+    
+        $('#hImage').on('input', function() { 
+            changeImageFilter();
+        });
+    }
+
 });
 
 //METODO PARA MANIPULAÇÃO DO MENU LATERAL

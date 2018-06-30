@@ -37,7 +37,8 @@ function createWindow () {
 	// })
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  //DESCOMENTE PARA ABRIR O CONSOLE DO APP PARA ANALISAR OS CONSOLE LOGS
+  //mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
