@@ -1,3 +1,15 @@
+//NPM ADICIONADOS NO PROJETO
+//https://www.npmjs.com/package/pixel-util
+//https://github.com/miguelmota/sobel
+//https://www.npmjs.com/package/arff-utils
+//https://www.npmjs.com/package/canny-edge-detector
+//https://www.npmjs.com/package/electron-debug
+//https://www.npmjs.com/package/hog-features
+//https://github.com/image-js/image-js
+//https://www.npmjs.com/package/jquery
+//https://www.npmjs.com/package/lbp
+//https://github.com/systemjs/systemjs
+
 //Metodos ao iniciar APP
 $(document).ready(function () {
 
