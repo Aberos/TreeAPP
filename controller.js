@@ -10,6 +10,20 @@
 //https://www.npmjs.com/package/lbp
 //https://github.com/systemjs/systemjs
 
+//verifique se o electron packager esta instalado para compilar
+//https://github.com/electron-userland/electron-packager
+
+//PARA COMPILAR EXECUTE O COMANDO ABAIXO DENTRO DA PASTA ANTERIOR DO PROJETO
+//EXEMPLO : SE O PROJETO ESTA NO CAMINHO C:\Users\Junim\Documents\Electron\TreeApp>
+//VOCE EXECUTA O COMANDO DENTRO DO CAMINHO C:\Users\Junim\Documents\Electron>
+//COMANDO 
+//para windows 32bits electron-packager .\TreeApp\ TreeAPP --platform=win32 --arch=ia32
+//para windows 64bits electron-packager .\TreeApp\ TreeAPP --platform=win32 --arch=x64
+//para linux 32bits electron-packager .\TreeApp\ TreeAPP --platform=linux --arch=ia32
+//para linux 64bits electron-packager .\TreeApp\ TreeAPP --platform=linux --arch=x64
+//ESTRUTURA DO COMANDO
+//electron-packager <DIRETORIO DO APP> <NOME DO APP> --platform=<PLATAFORMA> --arch=<ARQUITETURA DO S.O>
+
 //Metodos ao iniciar APP
 $(document).ready(function () {
 
